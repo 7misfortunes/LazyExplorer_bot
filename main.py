@@ -440,6 +440,8 @@ IATA_TO_YANDEX = {
     # добавляй по мере надобности
 }
 
+iata_to_city.get("LED", "LED")
+
 def parse_aviasales_url(url):
     if "avs.io" in url:
         try:
