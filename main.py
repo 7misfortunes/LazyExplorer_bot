@@ -5,6 +5,8 @@ import re
 from datetime import datetime
 import os
 
+from cities import iata_to_city
+
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 IATA_TO_YANDEX = {
