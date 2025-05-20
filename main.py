@@ -440,6 +440,21 @@ IATA_TO_YANDEX = {
     # добавляй по мере надобности
 }
 
+def format_result(from_code, to_code, depart_date, return_date=None):
+    from_city = iata_to_city.get(from_code, from_code)
+    to_city = iata_to_city.get(to_code, to_code)
+
+    yandex_url = f"https://travel.yandex.ru/avia/search/result/?fromId={IATA_TO_YANDEX[from_code]}&toId={IATA_TO_YANDEX[to_code]}&when={depart_date}&adult_seats=1&children_seats=0&infant_seats=0&klass=economy"
+
+    if return_date:
+        yandex_url += f"&return_date={return_date}&oneway=2"
+        date_str = f"{depart_date[8:10]}.{depart_date[5:7]}-{return_date[8:10]}.{return_date[5:7]}"
+    else:
+        yandex_url += "&oneway=1"
+        date_str = f"{depart_date[8:10]}.{depart_date[5:7]}"
+
+    return f"📍{to_city} — ({date_str})\n{yandex_url}"
+
 iata_to_city.get("LED", "LED")
 
 def parse_aviasales_url(url):
@@ -466,11 +481,10 @@ def parse_aviasales_url(url):
 
     if return_day and return_month:
         return_date = f"{year}-{return_month}-{return_day}"
-        base += f"&return_date={return_date}&oneway=2"
     else:
-        base += f"&oneway=1"
+        return_date = None
 
-    return f"📍{to_iata} — {day}.{month}\n{base}"
+    return format_result(from_iata, to_iata, depart_date, return_date)
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = update.message.text.strip()
